@@ -6,7 +6,7 @@ import GuestHeader from '../components/guest/GuestHeader';
 import SectionCard from '../components/guest/SectionCard';
 import GearGrid from '../components/guest/GearGrid';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiAlertCircle, FiBookOpen } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { GuestViewSkeleton } from '../components/ui/Skeleton';
 
@@ -56,7 +56,7 @@ export default function GuestView() {
   if (error || !property) return (
     <div className="min-h-screen flex items-center justify-center bg-offwhite p-4">
       <div className="text-center max-w-md">
-        <SafeIcon icon={FiIcons.FiAlertCircle} className="text-4xl text-terracotta mb-4 mx-auto" />
+        <SafeIcon icon={FiAlertCircle} className="text-4xl text-terracotta mb-4 mx-auto" />
         <h2 className="text-xl font-bold mb-2">Guide Not Found</h2>
         <p className="text-gray-500">We couldn't find a guide for this property. Please check the URL.</p>
       </div>
@@ -83,7 +83,7 @@ export default function GuestView() {
                   : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
               )}
             >
-              <SafeIcon icon={FiIcons[cat.icon]} />
+              <SafeIcon icon={cat.icon} />
               {cat.label}
             </button>
           ))}
@@ -99,7 +99,7 @@ export default function GuestView() {
         >
           {filteredSections.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-              <SafeIcon icon={FiIcons.FiBookOpen} className="text-4xl text-gray-300 mx-auto mb-4" />
+              <SafeIcon icon={FiBookOpen} className="text-4xl text-gray-300 mx-auto mb-4" />
               <p className="text-gray-400 font-serif">No instructions added to this section yet.</p>
             </div>
           ) : (

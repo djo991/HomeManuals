@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from './ui/Button';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiRefreshCw } from 'react-icons/fi';
 
 export default function PWAUpdatePrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -47,7 +47,7 @@ export default function PWAUpdatePrompt() {
       <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-xl">
         <div className="flex items-start gap-3">
           <div className="bg-sage/10 p-2 rounded-lg flex-shrink-0">
-            <SafeIcon icon={FiIcons.FiRefreshCw} className="text-sage text-xl" />
+            <SafeIcon icon={FiRefreshCw} className="text-sage text-xl" />
           </div>
           <div className="flex-1">
             <h3 className="font-medium text-charcoal mb-1">Update Available</h3>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiAlertTriangle, FiUserPlus, FiKey, FiXCircle, FiCheckCircle, FiLoader } from 'react-icons/fi';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function Login() {
@@ -100,7 +100,7 @@ export default function Login() {
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
         {!isSupabaseConfigured && (
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex gap-3 text-amber-800 text-sm">
-            <SafeIcon icon={FiIcons.FiAlertTriangle} className="text-xl flex-shrink-0" />
+            <SafeIcon icon={FiAlertTriangle} className="text-xl flex-shrink-0" />
             <p>
               <strong>Setup Required:</strong> Add your Supabase credentials to the Project Settings / Environment Variables to enable authentication.
             </p>
@@ -109,7 +109,7 @@ export default function Login() {
 
         <div className="text-center mb-8">
           <div className="bg-charcoal text-white w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <SafeIcon icon={isSignUp ? FiIcons.FiUserPlus : FiIcons.FiKey} className="text-2xl" />
+            <SafeIcon icon={isSignUp ? FiUserPlus : FiKey} className="text-2xl" />
           </div>
           <h1 className="text-2xl font-serif font-bold text-charcoal">
             {isSignUp ? 'Create Account' : 'Owner Access'}
@@ -152,14 +152,14 @@ export default function Login() {
 
           {error && (
             <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-100 flex gap-2 items-start">
-              <SafeIcon icon={FiIcons.FiXCircle} className="mt-0.5 flex-shrink-0" />
+              <SafeIcon icon={FiXCircle} className="mt-0.5 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
             <div className="text-green-700 text-sm bg-green-50 p-4 rounded-xl border border-green-100 flex gap-2 items-start">
-              <SafeIcon icon={FiIcons.FiCheckCircle} className="mt-0.5 flex-shrink-0" />
+              <SafeIcon icon={FiCheckCircle} className="mt-0.5 flex-shrink-0" />
               <span>{success}</span>
             </div>
           )}
@@ -171,7 +171,7 @@ export default function Login() {
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <SafeIcon icon={FiIcons.FiLoader} className="animate-spin" />
+                <SafeIcon icon={FiLoader} className="animate-spin" />
                 {isSignUp ? 'Creating Account...' : 'Signing In...'}
               </span>
             ) : (isSignUp ? 'Create Account' : 'Enter Dashboard')}

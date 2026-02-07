@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import SafeIcon from '../../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiX, FiImage, FiLoader, FiUpload } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
@@ -76,13 +76,13 @@ export default function ImageUpload({ value, onChange, label }) {
                   onClick={() => onChange('')}
                   className="p-1 bg-red-500 rounded-full text-white hover:bg-red-600"
                 >
-                  <SafeIcon icon={FiIcons.FiX} className="text-sm" />
+                  <SafeIcon icon={FiX} className="text-sm" />
                 </button>
               </div>
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
-              <SafeIcon icon={FiIcons.FiImage} className="text-xl" />
+              <SafeIcon icon={FiImage} className="text-xl" />
             </div>
           )}
         </div>
@@ -97,7 +97,7 @@ export default function ImageUpload({ value, onChange, label }) {
             />
             <div className={`inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm ${uploading ? 'opacity-50' : ''}`}>
               <SafeIcon 
-                icon={uploading ? FiIcons.FiLoader : FiIcons.FiUpload} 
+                icon={uploading ? FiLoader : FiUpload} 
                 className={`mr-2 ${uploading ? 'animate-spin' : ''}`} 
               />
               {uploading ? 'Uploading...' : (value ? 'Change Image' : 'Upload Image')}

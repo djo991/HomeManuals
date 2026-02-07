@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiHome, FiPlus, FiImage, FiTrash2, FiMapPin, FiArrowRight } from 'react-icons/fi';
 import { generateSlug } from '../lib/utils';
 import { Input } from '../components/ui/Input';
 import toast from 'react-hot-toast';
@@ -85,7 +85,8 @@ export default function Dashboard() {
 
     setDeletingId(propId);
     try {
-      // First delete all sections for this property
+      // Delete sections first, then the property
+      // If section delete fails, abort before deleting the property
       const { error: sectionsError } = await supabase
         .from('manual_sections')
         .delete()
@@ -93,11 +94,11 @@ export default function Dashboard() {
 
       if (sectionsError) throw sectionsError;
 
-      // Then delete the property
       const { error } = await supabase
         .from('properties')
         .delete()
-        .eq('id', propId);
+        .eq('id', propId)
+        .eq('owner_id', user.id);
 
       if (error) throw error;
 
@@ -131,12 +132,12 @@ export default function Dashboard() {
       ) : properties.length === 0 && !isCreating ? (
         <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300 shadow-sm">
           <div className="bg-sage/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <SafeIcon icon={FiIcons.FiHome} className="text-4xl text-sage" />
+            <SafeIcon icon={FiHome} className="text-4xl text-sage" />
           </div>
           <h2 className="text-2xl font-bold text-charcoal mb-2">No properties yet</h2>
           <p className="text-gray-500 mb-8 max-w-md mx-auto">Create your first property to start building a beautiful digital guide for your guests.</p>
           <Button onClick={() => setIsCreating(true)} size="lg" variant="sage">
-            <SafeIcon icon={FiIcons.FiPlus} className="mr-2" /> Create First Property
+            <SafeIcon icon={FiPlus} className="mr-2" /> Create First Property
           </Button>
         </div>
       ) : (
@@ -165,7 +166,7 @@ export default function Dashboard() {
               className="group flex flex-col items-center justify-center min-h-[200px] bg-white border-2 border-dashed border-gray-200 rounded-2xl hover:border-sage hover:bg-sage/5 transition-all"
             >
               <div className="bg-gray-100 group-hover:bg-white p-4 rounded-full mb-3 transition-colors shadow-sm">
-                <SafeIcon icon={FiIcons.FiPlus} className="text-2xl text-gray-400 group-hover:text-sage" />
+                <SafeIcon icon={FiPlus} className="text-2xl text-gray-400 group-hover:text-sage" />
               </div>
               <span className="font-medium text-gray-500 group-hover:text-sage">Add New Property</span>
             </button>
@@ -183,7 +184,7 @@ export default function Dashboard() {
                   <img src={prop.cover_image} alt={prop.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                    <SafeIcon icon={FiIcons.FiImage} className="text-3xl" />
+                    <SafeIcon icon={FiImage} className="text-3xl" />
                   </div>
                 )}
                 <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -208,7 +209,7 @@ export default function Dashboard() {
                       className="p-2 bg-white/90 backdrop-blur rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
                       title="Delete property"
                     >
-                      <SafeIcon icon={FiIcons.FiTrash2} className="text-sm" />
+                      <SafeIcon icon={FiTrash2} className="text-sm" />
                     </button>
                   )}
                 </div>
@@ -219,12 +220,12 @@ export default function Dashboard() {
               <div className="p-6">
                 <h3 className="text-xl font-bold text-charcoal font-serif mb-1">{prop.name}</h3>
                 <p className="text-sm text-gray-500 flex items-center mb-4">
-                  <SafeIcon icon={FiIcons.FiMapPin} className="mr-1" />
+                  <SafeIcon icon={FiMapPin} className="mr-1" />
                   {prop.address || 'No address set'}
                 </p>
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                   <span className="text-xs text-gray-400 font-mono">/{prop.slug}</span>
-                  <SafeIcon icon={FiIcons.FiArrowRight} className="text-sage transform group-hover:translate-x-1 transition-transform" />
+                  <SafeIcon icon={FiArrowRight} className="text-sage transform group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </div>

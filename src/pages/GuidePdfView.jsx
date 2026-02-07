@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { CATEGORIES } from '../lib/utils';
 import { Button } from '../components/ui/Button';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiArrowLeft, FiDownload, FiMapPin, FiList } from 'react-icons/fi';
 import Markdown from 'react-markdown';
 
 export default function GuidePdfView() {
@@ -61,7 +61,7 @@ export default function GuidePdfView() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <SafeIcon icon={FiIcons.FiLoader} className="animate-spin text-3xl text-sage" />
+        <SafeIcon icon={FiLoader} className="animate-spin text-3xl text-sage" />
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function GuidePdfView() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white p-4">
         <div className="text-center">
-          <SafeIcon icon={FiIcons.FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
+          <SafeIcon icon={FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
           <p className="text-gray-600 mb-4">{error || 'Property not found'}</p>
           <Link to="/dashboard">
             <Button variant="sage">Back to Dashboard</Button>
@@ -94,14 +94,14 @@ export default function GuidePdfView() {
           <div className="flex items-center gap-3">
             <Link to={`/dashboard/property/${id}`}>
               <Button variant="secondary" size="sm">
-                <SafeIcon icon={FiIcons.FiArrowLeft} className="mr-2" />
+                <SafeIcon icon={FiArrowLeft} className="mr-2" />
                 Back to Editor
               </Button>
             </Link>
           </div>
           <div className="flex gap-2">
             <Button onClick={handlePrint} variant="sage" size="sm">
-              <SafeIcon icon={FiIcons.FiDownload} className="mr-2" />
+              <SafeIcon icon={FiDownload} className="mr-2" />
               Download PDF
             </Button>
           </div>
@@ -127,7 +127,7 @@ export default function GuidePdfView() {
           <p className="text-xl text-gray-500 mb-2">Guest Manual</p>
           {property.address && (
             <p className="text-gray-400 flex items-center justify-center gap-2">
-              <SafeIcon icon={FiIcons.FiMapPin} />
+              <SafeIcon icon={FiMapPin} />
               {property.address}
             </p>
           )}
@@ -136,14 +136,14 @@ export default function GuidePdfView() {
         {/* Table of Contents */}
         <div className="mb-12 print-avoid-break">
           <h2 className="text-2xl font-serif font-bold text-charcoal mb-6 flex items-center gap-3">
-            <SafeIcon icon={FiIcons.FiList} className="text-sage" />
+            <SafeIcon icon={FiList} className="text-sage" />
             Table of Contents
           </h2>
           <div className="space-y-2">
             {sectionsByCategory.map((cat, idx) => (
               <div key={cat.id} className="flex items-center gap-3 py-2 border-b border-gray-100">
                 <span className="text-sage font-bold">{idx + 1}.</span>
-                <SafeIcon icon={FiIcons[cat.icon]} className="text-gray-400" />
+                <SafeIcon icon={cat.icon} className="text-gray-400" />
                 <span className="font-medium text-charcoal">{cat.label}</span>
                 <span className="flex-1 border-b border-dotted border-gray-300 mx-2" />
                 <span className="text-gray-400 text-sm">{cat.sections.length} items</span>
@@ -158,7 +158,7 @@ export default function GuidePdfView() {
             <div className="mb-8 print-avoid-break">
               <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-sage">
                 <div className="bg-sage/10 p-3 rounded-xl">
-                  <SafeIcon icon={FiIcons[cat.icon]} className="text-2xl text-sage" />
+                  <SafeIcon icon={cat.icon} className="text-2xl text-sage" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-serif font-bold text-charcoal">

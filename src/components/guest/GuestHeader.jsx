@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SafeIcon from '../../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiImage, FiMapPin } from 'react-icons/fi';
 
 export default function GuestHeader({ property }) {
   return (
@@ -16,7 +16,7 @@ export default function GuestHeader({ property }) {
           />
         ) : (
           <div className="h-full w-full bg-slate-200 flex items-center justify-center">
-            <SafeIcon icon={FiIcons.FiImage} className="text-4xl text-slate-400" />
+            <SafeIcon icon={FiImage} className="text-4xl text-slate-400" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -34,7 +34,7 @@ export default function GuestHeader({ property }) {
             {property?.name || 'Welcome'}
           </h1>
           <div className="flex items-center text-white/90 text-sm md:text-base">
-            <SafeIcon icon={FiIcons.FiMapPin} className="mr-2" />
+            <SafeIcon icon={FiMapPin} className="mr-2" />
             <span>{property?.address || 'Private Address'}</span>
           </div>
         </motion.div>

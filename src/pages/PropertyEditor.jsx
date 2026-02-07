@@ -7,7 +7,7 @@ import { Input, TextArea } from '../components/ui/Input';
 import ImageUpload from '../components/ui/ImageUpload';
 import { CATEGORIES } from '../lib/utils';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiArrowLeft, FiEye, FiFileText, FiPrinter, FiExternalLink, FiSettings, FiImage, FiEdit2, FiTrash2, FiInbox, FiX, FiMapPin, FiBookOpen } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Markdown from 'react-markdown';
 import { cn } from '../lib/utils';
@@ -74,7 +74,8 @@ export default function PropertyEditor() {
       setIsSaving(true);
       const { error } = await supabase.from('properties')
         .update({ name: propName, address: propAddress, cover_image: propImage })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('owner_id', user.id);
       
       if (error) throw error;
       toast.success('Property details updated');
@@ -178,7 +179,7 @@ export default function PropertyEditor() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-offwhite">
       <div className="text-center">
-        <SafeIcon icon={FiIcons.FiLoader} className="animate-spin text-3xl text-sage mb-2 mx-auto" />
+        <SafeIcon icon={FiLoader} className="animate-spin text-3xl text-sage mb-2 mx-auto" />
         <p className="text-gray-500 font-serif">Loading property data...</p>
       </div>
     </div>
@@ -187,7 +188,7 @@ export default function PropertyEditor() {
   if (unauthorized) return (
     <div className="min-h-screen flex items-center justify-center bg-offwhite">
       <div className="text-center max-w-md">
-        <SafeIcon icon={FiIcons.FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
+        <SafeIcon icon={FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
         <h2 className="text-xl font-bold mb-2 text-charcoal">Access Denied</h2>
         <p className="text-gray-500 mb-6">You don't have permission to edit this property.</p>
         <Link to="/dashboard">
@@ -206,7 +207,7 @@ export default function PropertyEditor() {
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link to="/dashboard" className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
-              <SafeIcon icon={FiIcons.FiArrowLeft} />
+              <SafeIcon icon={FiArrowLeft} />
             </Link>
             <h1 className="font-serif font-bold text-lg md:text-xl text-charcoal truncate max-w-[150px] md:max-w-md">
               {property.name}
@@ -214,22 +215,22 @@ export default function PropertyEditor() {
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" size="sm" onClick={() => setShowPreview(true)}>
-              <SafeIcon icon={FiIcons.FiEye} className="md:mr-2" />
+              <SafeIcon icon={FiEye} className="md:mr-2" />
               <span className="hidden md:inline">Preview</span>
             </Button>
             <Link to={`/dashboard/property/${id}/pdf`}>
               <Button variant="secondary" size="sm" className="hidden md:flex">
-                <SafeIcon icon={FiIcons.FiFileText} className="mr-2" /> PDF
+                <SafeIcon icon={FiFileText} className="mr-2" /> PDF
               </Button>
             </Link>
             <Link to={`/dashboard/property/${id}/print`}>
               <Button variant="secondary" size="sm" className="hidden md:flex">
-                <SafeIcon icon={FiIcons.FiPrinter} className="mr-2" /> QR Code
+                <SafeIcon icon={FiPrinter} className="mr-2" /> QR Code
               </Button>
             </Link>
             <Link to={`/g/${property.slug}`} target="_blank">
               <Button variant="sage" size="sm">
-                <SafeIcon icon={FiIcons.FiExternalLink} className="md:mr-2" />
+                <SafeIcon icon={FiExternalLink} className="md:mr-2" />
                 <span className="hidden md:inline">View Live</span>
               </Button>
             </Link>
@@ -242,7 +243,7 @@ export default function PropertyEditor() {
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h2 className="font-bold text-charcoal mb-4 flex items-center gap-2">
-              <SafeIcon icon={FiIcons.FiSettings} className="text-sage" />
+              <SafeIcon icon={FiSettings} className="text-sage" />
               Property Details
             </h2>
             <div className="space-y-4">
@@ -267,7 +268,7 @@ export default function PropertyEditor() {
                 className={`w-full text-left px-6 py-4 flex items-center justify-between transition-all ${activeTab === cat.id ? 'bg-sage/10 text-sage font-bold border-l-4 border-sage' : 'hover:bg-gray-50 text-gray-600'}`}
               >
                 <div className="flex items-center gap-3">
-                  <SafeIcon icon={FiIcons[cat.icon]} />
+                  <SafeIcon icon={cat.icon} />
                   {cat.label}
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === cat.id ? 'bg-sage text-white' : 'bg-gray-100 text-gray-500'}`}>
@@ -300,7 +301,7 @@ export default function PropertyEditor() {
                     <img src={section.image_url} alt={section.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300">
-                      <SafeIcon icon={FiIcons.FiImage} />
+                      <SafeIcon icon={FiImage} />
                     </div>
                   )}
                 </div>
@@ -334,7 +335,7 @@ export default function PropertyEditor() {
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
                         title="Edit item"
                       >
-                        <SafeIcon icon={FiIcons.FiEdit2} />
+                        <SafeIcon icon={FiEdit2} />
                       </button>
                       <button 
                         type="button"
@@ -344,9 +345,9 @@ export default function PropertyEditor() {
                         title="Delete item"
                       >
                         {deletingId === section.id ? (
-                          <SafeIcon icon={FiIcons.FiLoader} className="animate-spin" />
+                          <SafeIcon icon={FiLoader} className="animate-spin" />
                         ) : (
-                          <SafeIcon icon={FiIcons.FiTrash2} />
+                          <SafeIcon icon={FiTrash2} />
                         )}
                       </button>
                     </>
@@ -356,7 +357,7 @@ export default function PropertyEditor() {
             ))}
             {filteredSections.length === 0 && (
               <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300 text-gray-400">
-                <SafeIcon icon={FiIcons.FiInbox} className="text-4xl mx-auto mb-2 opacity-20" />
+                <SafeIcon icon={FiInbox} className="text-4xl mx-auto mb-2 opacity-20" />
                 <p>No instructions added to this section yet.</p>
               </div>
             )}
@@ -388,7 +389,7 @@ export default function PropertyEditor() {
                 <Button onClick={handleSaveSection} disabled={isSaving || !secTitle} variant="sage" className="flex-1 h-12">
                   {isSaving ? (
                     <span className="flex items-center gap-2">
-                      <SafeIcon icon={FiIcons.FiLoader} className="animate-spin" /> 
+                      <SafeIcon icon={FiLoader} className="animate-spin" /> 
                       Saving...
                     </span>
                   ) : (editingSection ? 'Update Item' : 'Add Item')}
@@ -418,7 +419,7 @@ export default function PropertyEditor() {
                 onClick={() => setShowPreview(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <SafeIcon icon={FiIcons.FiX} className="text-xl" />
+                <SafeIcon icon={FiX} className="text-xl" />
               </button>
             </div>
 
@@ -430,7 +431,7 @@ export default function PropertyEditor() {
                   <img src={propImage} alt={propName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                    <SafeIcon icon={FiIcons.FiImage} className="text-4xl" />
+                    <SafeIcon icon={FiImage} className="text-4xl" />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -438,7 +439,7 @@ export default function PropertyEditor() {
                   <h2 className="text-2xl font-serif font-bold">{propName || 'Property Name'}</h2>
                   {propAddress && (
                     <p className="text-sm opacity-90 flex items-center gap-1 mt-1">
-                      <SafeIcon icon={FiIcons.FiMapPin} /> {propAddress}
+                      <SafeIcon icon={FiMapPin} /> {propAddress}
                     </p>
                   )}
                 </div>
@@ -458,7 +459,7 @@ export default function PropertyEditor() {
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       )}
                     >
-                      <SafeIcon icon={FiIcons[cat.icon]} />
+                      <SafeIcon icon={cat.icon} />
                       {cat.label}
                     </button>
                   ))}
@@ -469,7 +470,7 @@ export default function PropertyEditor() {
               <div className="p-4 space-y-4">
                 {sections.filter(s => s.category === previewTab).length === 0 ? (
                   <div className="text-center py-12 text-gray-400">
-                    <SafeIcon icon={FiIcons.FiBookOpen} className="text-3xl mx-auto mb-2" />
+                    <SafeIcon icon={FiBookOpen} className="text-3xl mx-auto mb-2" />
                     <p>No content in this section yet</p>
                   </div>
                 ) : (
@@ -498,10 +499,10 @@ export default function PropertyEditor() {
 
             {/* Preview Footer */}
             <div className="bg-white border-t border-gray-200 p-4 flex justify-between items-center flex-shrink-0">
-              <p className="text-xs text-gray-400">This is a preview. Changes are saved automatically.</p>
+              <p className="text-xs text-gray-400">This is a preview of how guests will see your guide.</p>
               <Link to={`/g/${property.slug}`} target="_blank">
                 <Button variant="sage" size="sm">
-                  <SafeIcon icon={FiIcons.FiExternalLink} className="mr-2" />
+                  <SafeIcon icon={FiExternalLink} className="mr-2" />
                   Open Full View
                 </Button>
               </Link>

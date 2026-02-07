@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import QRCode from 'react-qr-code';
 import SafeIcon from '../common/SafeIcon';
-import * as FiIcons from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiWifi } from 'react-icons/fi';
 import { Button } from '../components/ui/Button';
 
 export default function PrintView() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
+      if (!user?.id || !id) return;
       try {
         setLoading(true);
         const { data, error: fetchError } = await supabase
@@ -23,6 +26,12 @@ export default function PrintView() {
           .single();
 
         if (fetchError) throw fetchError;
+
+        if (data.owner_id !== user.id) {
+          setError('You do not have permission to view this');
+          return;
+        }
+
         setProperty(data);
       } catch {
         setError('Failed to load property');
@@ -32,12 +41,12 @@ export default function PrintView() {
     };
 
     fetchProperty();
-  }, [id]);
+  }, [id, user?.id]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <SafeIcon icon={FiIcons.FiLoader} className="animate-spin text-3xl text-sage" />
+        <SafeIcon icon={FiLoader} className="animate-spin text-3xl text-sage" />
       </div>
     );
   }
@@ -46,7 +55,7 @@ export default function PrintView() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="text-center">
-          <SafeIcon icon={FiIcons.FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
+          <SafeIcon icon={FiAlertCircle} className="text-4xl text-red-500 mb-4 mx-auto" />
           <p className="text-gray-600 mb-4">{error || 'Property not found'}</p>
           <Link to="/dashboard">
             <Button variant="sage">Back to Dashboard</Button>
@@ -78,7 +87,7 @@ export default function PrintView() {
         <div className="space-y-4 mb-8">
           <p className="text-xl font-serif text-gray-600">Scan for the digital house manual & Wi-Fi details.</p>
           <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono bg-gray-50 py-2 px-4 rounded-full inline-block">
-             <SafeIcon icon={FiIcons.FiWifi} />
+             <SafeIcon icon={FiWifi} />
              <span>Scan to Access</span>
           </div>
         </div>
