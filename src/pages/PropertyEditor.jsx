@@ -7,7 +7,7 @@ import { Input, TextArea } from '../components/ui/Input';
 import ImageUpload from '../components/ui/ImageUpload';
 import { CATEGORIES } from '../lib/utils';
 import SafeIcon from '../common/SafeIcon';
-import { FiLoader, FiAlertCircle, FiArrowLeft, FiEye, FiFileText, FiPrinter, FiExternalLink, FiSettings, FiImage, FiEdit2, FiTrash2, FiInbox, FiX, FiMapPin, FiBookOpen } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiArrowLeft, FiEye, FiFileText, FiPrinter, FiExternalLink, FiSettings, FiImage, FiEdit2, FiTrash2, FiInbox, FiX, FiMapPin, FiBookOpen, FiWifi } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Markdown from 'react-markdown';
 import { cn } from '../lib/utils';
@@ -31,6 +31,8 @@ export default function PropertyEditor() {
   const [propName, setPropName] = useState('');
   const [propAddress, setPropAddress] = useState('');
   const [propImage, setPropImage] = useState('');
+  const [wifiPassword, setWifiPassword] = useState('');
+  const [showWifiOnQr, setShowWifiOnQr] = useState(false);
 
   // Section Fields State
   const [secTitle, setSecTitle] = useState('');
@@ -57,6 +59,8 @@ export default function PropertyEditor() {
       setPropName(prop.name);
       setPropAddress(prop.address || '');
       setPropImage(prop.cover_image || '');
+      setWifiPassword(prop.wifi_password || '');
+      setShowWifiOnQr(prop.show_wifi_on_qr || false);
       setSections(sects || []);
     } catch (err) {
       toast.error('Error loading data: ' + err.message);
@@ -73,7 +77,7 @@ export default function PropertyEditor() {
     try {
       setIsSaving(true);
       const { error } = await supabase.from('properties')
-        .update({ name: propName, address: propAddress, cover_image: propImage })
+        .update({ name: propName, address: propAddress, cover_image: propImage, wifi_password: wifiPassword, show_wifi_on_qr: showWifiOnQr })
         .eq('id', id)
         .eq('owner_id', user.id);
       
@@ -250,6 +254,33 @@ export default function PropertyEditor() {
               <Input label="Name" value={propName} onChange={e => setPropName(e.target.value)} />
               <Input label="Address" value={propAddress} onChange={e => setPropAddress(e.target.value)} />
               <ImageUpload label="Cover Image" value={propImage} onChange={setPropImage} />
+              <div className="pt-2 border-t border-gray-100">
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-charcoal flex items-center gap-2">
+                    <SafeIcon icon={FiWifi} className="text-sage" />
+                    Show Wi-Fi on QR card
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={showWifiOnQr}
+                      onChange={e => setShowWifiOnQr(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-sage transition-colors" />
+                    <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow peer-checked:translate-x-4 transition-transform" />
+                  </div>
+                </label>
+                {showWifiOnQr && (
+                  <Input
+                    label="Wi-Fi Password"
+                    value={wifiPassword}
+                    onChange={e => setWifiPassword(e.target.value)}
+                    placeholder="Enter Wi-Fi password"
+                    className="mt-3"
+                  />
+                )}
+              </div>
               <Button onClick={handleUpdateProperty} disabled={isSaving} className="w-full" size="sm">
                 {isSaving ? 'Saving...' : 'Update Details'}
               </Button>
