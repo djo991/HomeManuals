@@ -86,16 +86,12 @@ export default function PrintView() {
 
         <div className="space-y-4 mb-8">
           <p className="text-xl font-serif text-gray-600">Scan for the digital house manual & Wi-Fi details.</p>
-          {property.show_wifi_on_qr && property.wifi_password ? (
-            <div className="flex items-center justify-center gap-3 text-base text-charcoal font-mono bg-gray-50 py-3 px-6 rounded-xl border border-gray-200">
-              <SafeIcon icon={FiWifi} className="text-sage" />
-              <span className="font-bold tracking-wide">{property.wifi_password}</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono bg-gray-50 py-2 px-4 rounded-full inline-block">
-              <SafeIcon icon={FiWifi} />
-              <span>Scan to Access</span>
-            </div>
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-mono bg-gray-50 py-2 px-4 rounded-full inline-block">
+            <SafeIcon icon={FiWifi} />
+            <span>Scan to Access</span>
+          </div>
+          {property.show_wifi_on_qr && property.wifi_password && (
+            <p className="text-lg text-charcoal font-mono">Password: {property.wifi_password}</p>
           )}
         </div>
       </div>
