@@ -8,6 +8,7 @@ import GearGrid from '../components/guest/GearGrid';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { GuestViewSkeleton } from '../components/ui/Skeleton';
 
 export default function GuestView() {
   const { slug } = useParams();
@@ -50,14 +51,7 @@ export default function GuestView() {
     if (slug) fetchData();
   }, [slug]);
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-offwhite">
-      <div className="text-center">
-        <SafeIcon icon={FiIcons.FiLoader} className="animate-spin text-3xl text-sage mb-4 mx-auto" />
-        <p className="font-serif text-charcoal text-lg">Preparing your guide...</p>
-      </div>
-    </div>
-  );
+  if (loading) return <GuestViewSkeleton />;
 
   if (error || !property) return (
     <div className="min-h-screen flex items-center justify-center bg-offwhite p-4">

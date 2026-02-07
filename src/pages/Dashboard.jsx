@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import { generateSlug } from '../lib/utils';
 import { Input } from '../components/ui/Input';
 import toast from 'react-hot-toast';
+import { PropertyCardSkeleton } from '../components/ui/Skeleton';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -15,6 +16,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [newPropName, setNewPropName] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   const fetchProperties = useCallback(async () => {
@@ -71,6 +74,43 @@ export default function Dashboard() {
     }
   };
 
+  const handleDeleteProperty = async (e, propId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (deleteConfirmId !== propId) {
+      setDeleteConfirmId(propId);
+      return;
+    }
+
+    setDeletingId(propId);
+    try {
+      // First delete all sections for this property
+      const { error: sectionsError } = await supabase
+        .from('manual_sections')
+        .delete()
+        .eq('property_id', propId);
+
+      if (sectionsError) throw sectionsError;
+
+      // Then delete the property
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', propId);
+
+      if (error) throw error;
+
+      setProperties(prev => prev.filter(p => p.id !== propId));
+      toast.success('Property deleted');
+    } catch (err) {
+      toast.error('Failed to delete property: ' + err.message);
+    } finally {
+      setDeletingId(null);
+      setDeleteConfirmId(null);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-6">
       <header className="flex justify-between items-center mb-10">
@@ -82,7 +122,12 @@ export default function Dashboard() {
       </header>
 
       {loading ? (
-         <div className="text-center py-20"><SafeIcon icon={FiIcons.FiLoader} className="animate-spin text-2xl mx-auto text-sage" /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PropertyCardSkeleton />
+          <PropertyCardSkeleton />
+          <PropertyCardSkeleton />
+          <PropertyCardSkeleton />
+        </div>
       ) : properties.length === 0 && !isCreating ? (
         <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300 shadow-sm">
           <div className="bg-sage/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -128,10 +173,10 @@ export default function Dashboard() {
 
           {/* Property Cards */}
           {properties.map(prop => (
-            <Link 
-              key={prop.id} 
-              to={`/dashboard/property/${prop.id}`}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-100 group"
+            <div
+              key={prop.id}
+              onClick={() => navigate(`/dashboard/property/${prop.id}`)}
+              className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-100 group cursor-pointer ${deletingId === prop.id ? 'opacity-50 pointer-events-none' : ''}`}
             >
               <div className="h-40 bg-gray-200 relative">
                 {prop.cover_image ? (
@@ -141,6 +186,32 @@ export default function Dashboard() {
                     <SafeIcon icon={FiIcons.FiImage} className="text-3xl" />
                   </div>
                 )}
+                <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {deleteConfirmId === prop.id ? (
+                    <div className="flex gap-1 bg-white rounded-lg p-1 shadow-lg">
+                      <button
+                        onClick={(e) => handleDeleteProperty(e, prop.id)}
+                        className="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(null); }}
+                        className="px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-bold rounded hover:bg-gray-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => handleDeleteProperty(e, prop.id)}
+                      className="p-2 bg-white/90 backdrop-blur rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
+                      title="Delete property"
+                    >
+                      <SafeIcon icon={FiIcons.FiTrash2} className="text-sm" />
+                    </button>
+                  )}
+                </div>
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-xs font-bold text-charcoal shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                   Edit Guide
                 </div>
@@ -156,7 +227,7 @@ export default function Dashboard() {
                   <SafeIcon icon={FiIcons.FiArrowRight} className="text-sage transform group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { cn } from '../../lib/utils';
 
-export const Input = React.forwardRef(({ className, label, error, ...props }, ref) => {
+export const Input = React.forwardRef(({ className, label, error, id: propId, ...props }, ref) => {
+  const generatedId = useId();
+  const inputId = propId || generatedId;
+
   return (
     <div className="w-full">
-      {label && <label className="block text-sm font-medium text-charcoal mb-1.5 ml-1">{label}</label>}
+      {label && (
+        <label
+          htmlFor={inputId}
+          className="block text-sm font-medium text-charcoal mb-1.5 ml-1"
+        >
+          {label}
+        </label>
+      )}
       <input
+        id={inputId}
         ref={ref}
+        aria-describedby={error ? `${inputId}-error` : undefined}
+        aria-invalid={error ? 'true' : undefined}
         className={cn(
           'flex h-12 w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           error && 'border-red-500 focus-visible:ring-red-500',
@@ -14,17 +27,36 @@ export const Input = React.forwardRef(({ className, label, error, ...props }, re
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-500 ml-1">{error}</p>}
+      {error && (
+        <p id={`${inputId}-error`} className="mt-1 text-sm text-red-500 ml-1" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 });
 
-export const TextArea = React.forwardRef(({ className, label, error, ...props }, ref) => {
+Input.displayName = 'Input';
+
+export const TextArea = React.forwardRef(({ className, label, error, id: propId, ...props }, ref) => {
+  const generatedId = useId();
+  const textareaId = propId || generatedId;
+
   return (
     <div className="w-full">
-      {label && <label className="block text-sm font-medium text-charcoal mb-1.5 ml-1">{label}</label>}
+      {label && (
+        <label
+          htmlFor={textareaId}
+          className="block text-sm font-medium text-charcoal mb-1.5 ml-1"
+        >
+          {label}
+        </label>
+      )}
       <textarea
+        id={textareaId}
         ref={ref}
+        aria-describedby={error ? `${textareaId}-error` : undefined}
+        aria-invalid={error ? 'true' : undefined}
         className={cn(
           'flex min-h-[120px] w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-serif',
           error && 'border-red-500 focus-visible:ring-red-500',
@@ -32,7 +64,13 @@ export const TextArea = React.forwardRef(({ className, label, error, ...props },
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-500 ml-1">{error}</p>}
+      {error && (
+        <p id={`${textareaId}-error`} className="mt-1 text-sm text-red-500 ml-1" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 });
+
+TextArea.displayName = 'TextArea';

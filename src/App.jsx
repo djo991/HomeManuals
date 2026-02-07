@@ -1,12 +1,15 @@
-import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import PropertyEditor from './pages/PropertyEditor';
 import GuestView from './pages/GuestView';
 import PrintView from './pages/PrintView';
+import GuidePdfView from './pages/GuidePdfView';
+import OfflineIndicator from './components/OfflineIndicator';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -25,9 +28,12 @@ function Protected({ children }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
+    <ErrorBoundary>
+      <AuthProvider>
+        <OfflineIndicator />
+        <PWAUpdatePrompt />
+        <Router>
+          <Routes>
           {/* Public Guest Route */}
           <Route path="/g/:slug" element={<GuestView />} />
           
@@ -50,20 +56,29 @@ export default function App() {
                 </Protected>
               } 
             />
-            <Route 
-              path="/dashboard/property/:id/print" 
+            <Route
+              path="/dashboard/property/:id/print"
               element={
                 <Protected>
                   <PrintView />
                 </Protected>
-              } 
+              }
+            />
+            <Route
+              path="/dashboard/property/:id/pdf"
+              element={
+                <Protected>
+                  <GuidePdfView />
+                </Protected>
+              }
             />
           </Route>
 
           {/* Catch all - redirect to login */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

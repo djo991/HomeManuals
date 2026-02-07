@@ -32,3 +32,5 @@ export const Button = React.forwardRef(({ className, variant = 'primary', size =
     />
   );
 });
+
+Button.displayName = 'Button';

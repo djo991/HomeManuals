@@ -9,6 +9,8 @@ import { CATEGORIES } from '../lib/utils';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import Markdown from 'react-markdown';
+import { cn } from '../lib/utils';
 
 export default function PropertyEditor() {
   const { id } = useParams();
@@ -22,6 +24,8 @@ export default function PropertyEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewTab, setPreviewTab] = useState('Essentials');
 
   // Property Fields State
   const [propName, setPropName] = useState('');
@@ -209,6 +213,15 @@ export default function PropertyEditor() {
             </h1>
           </div>
           <div className="flex gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowPreview(true)}>
+              <SafeIcon icon={FiIcons.FiEye} className="md:mr-2" />
+              <span className="hidden md:inline">Preview</span>
+            </Button>
+            <Link to={`/dashboard/property/${id}/pdf`}>
+              <Button variant="secondary" size="sm" className="hidden md:flex">
+                <SafeIcon icon={FiIcons.FiFileText} className="mr-2" /> PDF
+              </Button>
+            </Link>
             <Link to={`/dashboard/property/${id}/print`}>
               <Button variant="secondary" size="sm" className="hidden md:flex">
                 <SafeIcon icon={FiIcons.FiPrinter} className="mr-2" /> QR Code
@@ -216,7 +229,7 @@ export default function PropertyEditor() {
             </Link>
             <Link to={`/g/${property.slug}`} target="_blank">
               <Button variant="sage" size="sm">
-                <SafeIcon icon={FiIcons.FiExternalLink} className="md:mr-2" /> 
+                <SafeIcon icon={FiIcons.FiExternalLink} className="md:mr-2" />
                 <span className="hidden md:inline">View Live</span>
               </Button>
             </Link>
@@ -284,7 +297,7 @@ export default function PropertyEditor() {
               >
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden border border-gray-50">
                   {section.image_url ? (
-                    <img src={section.image_url} alt="" className="w-full h-full object-cover" />
+                    <img src={section.image_url} alt={section.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                       <SafeIcon icon={FiIcons.FiImage} />
@@ -390,6 +403,112 @@ export default function PropertyEditor() {
           </div>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-offwhite w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            {/* Preview Header */}
+            <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center flex-shrink-0">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-charcoal">Guest Preview</h3>
+                <p className="text-xs text-gray-500">How guests will see your guide</p>
+              </div>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <SafeIcon icon={FiIcons.FiX} className="text-xl" />
+              </button>
+            </div>
+
+            {/* Preview Content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Cover Image */}
+              <div className="h-48 bg-gray-200 relative">
+                {propImage ? (
+                  <img src={propImage} alt={propName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                    <SafeIcon icon={FiIcons.FiImage} className="text-4xl" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h2 className="text-2xl font-serif font-bold">{propName || 'Property Name'}</h2>
+                  {propAddress && (
+                    <p className="text-sm opacity-90 flex items-center gap-1 mt-1">
+                      <SafeIcon icon={FiIcons.FiMapPin} /> {propAddress}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Category Tabs */}
+              <div className="bg-white border-b border-gray-200 px-4 py-3 overflow-x-auto">
+                <div className="flex gap-2">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setPreviewTab(cat.id)}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap",
+                        previewTab === cat.id
+                          ? "bg-charcoal text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      )}
+                    >
+                      <SafeIcon icon={FiIcons[cat.icon]} />
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sections */}
+              <div className="p-4 space-y-4">
+                {sections.filter(s => s.category === previewTab).length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <SafeIcon icon={FiIcons.FiBookOpen} className="text-3xl mx-auto mb-2" />
+                    <p>No content in this section yet</p>
+                  </div>
+                ) : (
+                  sections.filter(s => s.category === previewTab).map(section => (
+                    <div key={section.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                      <div className="flex gap-4">
+                        {section.image_url && (
+                          <img
+                            src={section.image_url}
+                            alt={section.title}
+                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-charcoal mb-2">{section.title}</h4>
+                          <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+                            <Markdown>{section.content}</Markdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Preview Footer */}
+            <div className="bg-white border-t border-gray-200 p-4 flex justify-between items-center flex-shrink-0">
+              <p className="text-xs text-gray-400">This is a preview. Changes are saved automatically.</p>
+              <Link to={`/g/${property.slug}`} target="_blank">
+                <Button variant="sage" size="sm">
+                  <SafeIcon icon={FiIcons.FiExternalLink} className="mr-2" />
+                  Open Full View
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
